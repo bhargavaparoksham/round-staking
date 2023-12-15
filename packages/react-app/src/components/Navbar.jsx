@@ -13,7 +13,6 @@ export default function Navbar({
   selectedChainId,
   localChainId,
   NETWORKCHECK,
-  passport,
   userSigner,
   mainnetProvider,
   price,
@@ -29,13 +28,11 @@ export default function Navbar({
           <div className="float-right flex flex-row items-center font-medium text-gray-900">
             <img src="/gitcoinLogoDark.svg" alt="Gitcoin Logo" />
             <img className="ml-6 mr-6" src="/logoLine.svg" alt="Logo Line" />
-            <img src="/gtcStakingLogoIcon.svg" alt="Passport Logo" />
-            <span className="ml-6 text-grey-500 text-lg hidden md:inline-flex">IDENTITY STAKING</span>
+            <span className="ml-6 text-grey-500 text-lg hidden md:inline-flex">ROUND STAKING</span>
           </div>
         </div>
         <div className="ml-auto">
           <Account
-            passport={passport}
             address={address}
             readContracts={readContracts}
             localProvider={localProvider}

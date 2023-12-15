@@ -1,11 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
-import { Modal } from "antd";
-import { ExportOutlined } from "@ant-design/icons";
-import { Navbar, Account, AccountHomePage } from "../components";
+import React, { useEffect, useContext } from "react";
+import { Navbar, AccountHomePage } from "../components";
 import { useNavigate } from "react-router-dom";
-
-// --- sdk import
-import { PassportReader } from "@gitcoinco/passport-sdk-reader";
 
 import { Web3Context } from "../helpers/Web3Context";
 
@@ -24,7 +19,6 @@ function Home({
   selectedChainId,
   localChainId,
   NETWORKCHECK,
-  passport,
   userSigner,
   price,
   web3Modal,
@@ -33,81 +27,20 @@ function Home({
   networkOptions,
 }) {
   const navigate = useNavigate();
-  const { address, loggedIn, setLoggedIn } = useContext(Web3Context);
+  const { address } = useContext(Web3Context);
 
   // Route user to dashboard when wallet is connected
   useEffect(() => {
-    async function getPassport() {
+    async function loadDashboard() {
       if (userSigner) {
-        if (process.env.REACT_APP_REQUIRE_USER_HAS_PASSPORT === "true") {
-          // Update Passport on address change
-          const reader = new PassportReader();
-
-          const newAddress = await userSigner.getAddress();
-          let newPassport;
-          try {
-            newPassport = await reader.getPassport(newAddress);
-          } catch {}
-          if (web3Modal?.cachedProvider && newPassport) {
-            navigate("/StakeDashboard");
-            setLoggedIn(true);
-          } else if (!loggedIn) {
-            showModal();
-          }
-        } else {
-          navigate("/StakeDashboard");
-        }
+        navigate("/StakeDashboard");
       }
     }
-    getPassport();
-  }, [userSigner, web3Modal?.cachedProvider]);
-
-  // useEffect(() => {
-  //   console.log("no passport check ", passport, web3Modal?.cachedProvider);
-  //   if (!passport.expiryDate && !passport.issuanceDate && web3Modal?.cachedProvider) {
-  //     showModal();
-  //   }
-  // }, [userSigner]);
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleOk = () => {
-    setIsModalVisible(false);
-    window.location.replace("https://passport.gitcoin.co/");
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
+    loadDashboard();
+  }, [userSigner, web3Modal?.cachedProvider, navigate]);
 
   return (
     <div className="min-h-max min-h-default bg-landingPageBackground bg-cover bg-no-repeat text-gray-100 md:bg-center">
-      <Modal
-        title="Create a Passport to Get Started"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText={`Create a Passport`}
-        footer={[
-          <button
-            key="submit"
-            className="rounded-sm rounded bg-purple-connectPurple py-2 px-10 text-white"
-            onClick={handleOk}
-          >
-            <ExportOutlined />
-            Create Passport
-          </button>,
-        ]}
-      >
-        <p>
-          Looks like you don’t have a Passport yet! To get started on Identity Staking, create a passport on Gitcoin
-          Passport. If you do already have a passport, you may need to repair it in the main Gitcoin Passport app.
-        </p>
-      </Modal>
       <Navbar
         networkOptions={networkOptions}
         selectedNetwork={selectedNetwork}
@@ -121,7 +54,6 @@ function Home({
         selectedChainId={selectedChainId}
         localChainId={localChainId}
         NETWORKCHECK={NETWORKCHECK}
-        passport={passport}
         userSigner={userSigner}
         mainnetProvider={mainnetProvider}
         price={price}
@@ -133,20 +65,17 @@ function Home({
         <div className="mx-auto flex flex-wrap">
           <div className="mt-0 md:ml-4 w-full pb-6 text-white sm:mt-40 sm:w-1/2 md:mt-40 md:w-1/2 md:pt-6">
             <div className="leading-relaxed">
-              <p className="text-2xl sm:text-xl md:text-xl text-black text-left">Identity Staking</p>
+              <p className="text-2xl sm:text-xl md:text-xl text-black text-left">Round Staking</p>
               <p className="text-2xl sm:text-3xl md:text-3xl text-black text-left">
-                Defend against sybil by staking on your identity
+                Promote your favourite round by staking on it
               </p>
             </div>
             <div className="text-left mt-0 text-lg text-gray-900 sm:text-xl md:mt-10 md:pr-20 md:text-xl">
-              Identity Staking is a mechanism that allows you to stake on your own identity or stake on somebody else's.
-              We use GTC to stake, and each staking is associated with a Passport. By staking, the profile of stamps in
-              the Passport becomes more unique, which will likely result in a stronger Unique Humanity Score for the
-              current Grants Round.
+              Stake GTC to show the rounds you like on top of the Grants Stack Explorer home page. The more GTC you
+              stake, the higher the round will be ranked.
             </div>
             <div className="mt-4 w-full sm:mt-10 sm:w-1/2 md:mt-10 md:block md:w-1/2">
               <AccountHomePage
-                passport={passport}
                 web3Modal={web3Modal}
                 loadWeb3Modal={loadWeb3Modal}
                 logoutOfWeb3Modal={logoutOfWeb3Modal}

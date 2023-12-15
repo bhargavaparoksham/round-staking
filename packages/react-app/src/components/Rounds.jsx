@@ -1,14 +1,6 @@
 import React from "react";
-import { ethers } from "ethers";
 import { useState } from "react";
-import StakeItem from "./StakeItem";
-import StakeItemCommunity from "./StakeItemCommunity";
 import StakingModal from "./StakingModal/StakingModal";
-import { UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
-
-import { getSelfStakeAmount, getCommunityStakeAmount } from "./StakingModal/utils";
-
-const zero = ethers.BigNumber.from("0");
 
 export const STARTING_GRANTS_ROUND = 14;
 
@@ -29,50 +21,40 @@ const Rounds = ({
 }) => {
   // Set to visibility of Staking Modal
   const [isModalVisible, setIsModalVisible] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [stakingType, setStakingType] = useState("self");
-
-  const unstake = async amount => {
-    tx(writeContracts.IDStaking.unstake(round + "", amount));
-  };
-
-  const unstakeUsers = async users => {
-    tx(writeContracts.IDStaking.unstakeUsers(round + "", users));
-  };
 
   return (
     <>
-      <div className="text-gray-600 body-font">
-        <StakeItem
-          pending={pending}
-          icon={<UserOutlined style={{ fontSize: "25px" }} />}
-          title="Self Staking"
-          roundEnded={roundEnded}
-          unstake={unstake}
-          description="Stake GTC on yourself"
-          amount={getSelfStakeAmount(roundData)}
-          buttonText={getSelfStakeAmount(roundData) ? "Modify Stake" : "Stake"}
-          buttonHandler={() => {
-            setStakingType("self");
-            setIsModalVisible(true);
-          }}
-        />
-
-        <StakeItemCommunity
-          pending={pending}
-          icon={<UsergroupAddOutlined style={{ fontSize: "25px" }} />}
-          roundEnded={roundEnded}
-          unstakeUsers={unstakeUsers}
-          title="Community Staking"
-          description="Stake GTC on other people"
-          amount={getCommunityStakeAmount(roundData)}
-          buttonText={getCommunityStakeAmount(roundData) ? "Modify Stake" : "Stake"}
-          buttonHandler={() => {
-            setStakingType("community");
-            setIsModalVisible(true);
-          }}
-          xstakesTo={roundData?.user?.xstakeTo}
-          mainnetProvider={mainnetProvider}
-        />
+      <div className="flex flex-col items-center justify-center pb-10 mb-10 border-b">
+        <div className="flex items-center mb-4 w-1/2">
+          <div className="text-lg font-semibold w-1/3">Round Id</div>
+          <input type="text" className="border rounded px-2 py-1 text-lg w-2/3" placeholder="Enter Round Id" />
+        </div>
+        <div className="flex items-center w-1/2 mb-6">
+          <div className="text-lg font-semibold w-1/3">Chain Id</div>
+          <input type="text" className="border rounded px-1 py-1 text-lg w-2/3" placeholder="Enter Chain Id" />
+        </div>
+        <button
+          className="bg-purple-connectPurple-500 text-white font-bold py-2 px-4 rounded w-1/6 justify-center"
+          style={{ backgroundColor: "#6F3FF5", color: "white" }}
+        >
+          Fetch Data
+        </button>
+      </div>
+      <div className="flex flex-col items-center justify-center pb-10 mb-10 border-b">
+        <div className="flex items-center mt-4 mb-4 w-1/2">
+          <div className="text-lg font-semibold w-1/3">Total Staked (GTC)</div>
+          <div className="border rounded px-2 py-1 text-lg w-2/3">0</div>
+        </div>
+        <div className="flex items-center mt-4 mb-4 w-1/2">
+          <div className="text-lg font-semibold w-1/3">No of Stakers </div>
+          <div className="border rounded px-2 py-1 text-lg w-2/3">0</div>
+        </div>
+        <div className="flex items-center mt-4 mb-4 w-1/2">
+          <div className="text-lg font-semibold w-1/3">Your Staked (GTC)</div>
+          <div className="border rounded px-2 py-1 text-lg w-2/3">0</div>
+        </div>
       </div>
 
       <StakingModal

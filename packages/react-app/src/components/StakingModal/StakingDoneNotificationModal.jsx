@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Modal, Input, notification } from "antd";
+import { Button, Modal } from "antd";
 
 export default function StakingDoneNotificationModal({ onClose, visible }) {
   return (
@@ -30,22 +30,6 @@ export default function StakingDoneNotificationModal({ onClose, visible }) {
           >
             Done
           </Button>
-          <Button
-            onClick={() => {
-              window.location.replace("https://passport.gitcoin.co/");
-            }}
-            className="rounded"
-            style={{
-              backgroundColor: "#6F3FF5",
-              color: "white",
-              paddingTop: "10px",
-              paddingBottom: "10px",
-              height: "auto",
-              width: "170px",
-            }}
-          >
-            Go to Passport
-          </Button>
         </div>,
       ]}
     >
@@ -68,8 +52,7 @@ export default function StakingDoneNotificationModal({ onClose, visible }) {
         </div>
         <div className="flex flex-row justify-center">
           <div className="py-4 rounded-md font-libre-franklin text-center text-gray-500 text-lg">
-            Please note that it might take up to five minutes for your staking activity to be recognized in the Passport
-            app to allow you to claim your stamp. We appreciate your patience!
+            Please note that it might take up to five minutes for your staking activity to be recognised.
           </div>
         </div>
       </div>

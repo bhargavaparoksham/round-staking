@@ -226,7 +226,7 @@ module.exports = {
   1: {
     contracts: {
       Token: {
-        address: "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F",
+        address: "0x615D19f7B20557cCc7353025Fe9E7DCa4edee334",
         abi: ERC20ABI,
       },
     },

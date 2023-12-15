@@ -4,17 +4,13 @@ import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState, useContext } from "react";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import { Contract } from "./components";
 import { NETWORKS, ALCHEMY_KEY } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
-import { Admin, Home, Subgraph, StakeDashboard, Stakes } from "./views";
+import { Home, StakeDashboard } from "./views";
 import { useStaticJsonRPC } from "./hooks";
-
-// --- sdk import
-import { PassportReader } from "@gitcoinco/passport-sdk-reader";
 
 import { Web3Context } from "./helpers/Web3Context";
 
@@ -53,7 +49,7 @@ const web3Modal = Web3ModalSetup();
 // 🛰 providers
 const providers = [
   process.env.REACT_APP_ALCHEMY_URL,
-  `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
+  `https://goerli.alchemyapi.io/v2/${ALCHEMY_KEY}`,
   // "https://rpc.scaffoldeth.io:48544",
 ];
 
@@ -70,7 +66,6 @@ function App(props) {
   const [selectedNetwork, setSelectedNetwork] = useState(
     networkOptions[process.env.REACT_APP_NETWORK_OPTIONS_NUMBER || 1],
   );
-  const [passport, setPassport] = useState({});
 
   const targetNetwork = NETWORKS[selectedNetwork];
 
@@ -81,6 +76,7 @@ function App(props) {
   const localProvider = useStaticJsonRPC([
     process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : targetNetwork.rpcUrl,
   ]);
+
   const mainnetProvider = useStaticJsonRPC(providers);
 
   if (DEBUG) console.log(`Using ${selectedNetwork} network`);
@@ -108,28 +104,19 @@ function App(props) {
   const userSigner = userProviderAndSigner.signer;
 
   // Update Passport on address change
-  const reader = new PassportReader();
 
   useEffect(() => {
     setCurrentNetwork(targetNetwork);
-  }, [targetNetwork]);
+  }, [setCurrentNetwork, targetNetwork]);
 
   useEffect(() => {
     (async () => {
       if (userSigner) {
         const newAddress = await userSigner.getAddress();
         setAddress(newAddress);
-        if (process.env.REACT_APP_REQUIRE_USER_HAS_PASSPORT === "true") {
-          const newPassport = await reader.getPassport(newAddress);
-          setPassport(newPassport);
-        } else {
-          setPassport({});
-        }
-      } else {
-        setPassport({});
       }
     })();
-  }, [userSigner]);
+  }, [setAddress, userSigner]);
 
   // You can warn the user if you would like them to be on a specific network
   const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
@@ -259,7 +246,6 @@ function App(props) {
               selectedChainId={selectedChainId}
               localChainId={localChainId}
               NETWORKCHECK={NETWORKCHECK}
-              passport={passport}
               userSigner={userSigner}
               price={price}
               web3Modal={web3Modal}
@@ -288,73 +274,11 @@ function App(props) {
               selectedChainId={selectedChainId}
               localChainId={localChainId}
               NETWORKCHECK={NETWORKCHECK}
-              passport={passport}
               userSigner={userSigner}
               price={price}
               web3Modal={web3Modal}
               loadWeb3Modal={loadWeb3Modal}
               blockExplorer={blockExplorer}
-            />
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <Admin
-              tx={tx}
-              address={address}
-              readContracts={readContracts}
-              writeContracts={writeContracts}
-              mainnetProvider={mainnetProvider}
-            />
-          }
-        />
-        <Route
-          path="/stake-log"
-          element={
-            <Stakes
-              tx={tx}
-              address={address}
-              localProvider={localProvider}
-              readContracts={readContracts}
-              writeContracts={writeContracts}
-              mainnetProvider={mainnetProvider}
-            />
-          }
-        />
-        <Route
-          path="/debug"
-          element={
-            <div>
-              <Contract
-                name="Token"
-                price={price}
-                signer={userSigner}
-                provider={localProvider}
-                address={address}
-                blockExplorer={blockExplorer}
-                contractConfig={contractConfig}
-              />
-              <Contract
-                name="IDStaking"
-                price={price}
-                signer={userSigner}
-                provider={localProvider}
-                address={address}
-                blockExplorer={blockExplorer}
-                contractConfig={contractConfig}
-              />
-            </div>
-          }
-        />
-        <Route
-          path="/subgraph"
-          element={
-            <Subgraph
-              subgraphUri={props.subgraphUri}
-              tx={tx}
-              writeContracts={writeContracts}
-              mainnetProvider={mainnetProvider}
             />
           }
         />
